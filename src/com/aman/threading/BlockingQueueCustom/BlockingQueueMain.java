@@ -11,9 +11,11 @@ public class BlockingQueueMain {
 
     public BlockingQueueMain(int size){
         this.size=size;
-        this.queue = new LinkedList<String>();
+        this.queue = new LinkedList<>();
     }
 
+    //1* and 2* statement order doesnot matter as there will be Object O's monitor lock,
+    // so any other thread cant enter dequeue if its in enqueue
     public void enqueue(String element) throws InterruptedException {
         synchronized (o) {
             System.out.println("Enqueue--Start--"+Thread.currentThread().getName());
@@ -21,10 +23,10 @@ public class BlockingQueueMain {
                 System.out.println("Enqueue Waitinggggg!!!");
                 o.wait();
             }
-            if(queue.size()==0){
+            if(queue.size()==0){        //1*
                 o.notifyAll();
             }
-            queue.add(element);
+            queue.add(element);         //2*
             System.out.println("Enqueue--End--"+Thread.currentThread().getName()+" "+queue.size());
         }
 
