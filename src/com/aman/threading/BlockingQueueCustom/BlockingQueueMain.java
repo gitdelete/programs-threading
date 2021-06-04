@@ -29,7 +29,6 @@ public class BlockingQueueMain {
             queue.add(element);         //2*
             System.out.println("Enqueue--End--"+Thread.currentThread().getName()+" "+queue.size());
         }
-
     }
 
     public Object dequeue() throws InterruptedException {
