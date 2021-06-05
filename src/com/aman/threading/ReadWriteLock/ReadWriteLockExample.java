@@ -9,33 +9,34 @@ import java.util.stream.IntStream;
 public class ReadWriteLockExample {
     volatile static int check = 0;
     public static void main(String[] args) {
-        ReadWriteLock lock = new ReentrantReadWriteLock();
+
+        SharedClass sc = new SharedClass();
 
         ExecutorService es = Executors.newFixedThreadPool(5);
-        IntStream.rangeClosed(1,1).forEach(a -> es.submit(new WriteWorker(lock)));
+        IntStream.rangeClosed(1,1).forEach(a -> es.submit(new WriteWorker(sc)));
 
-        IntStream.range(1,10).forEach(a -> es.submit(new ReadWorker(lock)));
+        IntStream.range(1,10).forEach(a -> es.submit(new ReadWorker(sc)));
 
         es.shutdown();
     }
 
     static class ReadWorker implements  Runnable{
 
-        ReadWriteLock lock;
+        SharedClass sc;
+        public ReadWorker(SharedClass sc){
 
-        public ReadWorker(ReadWriteLock lock){
-            this.lock=lock;
-
+            this.sc= sc;
         }
 
         @Override
         public void run() {
+            String aa = null;
             try {
-                Thread.sleep(200);
+                aa = sc.readMethod();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println(check);
+            System.out.println(aa);
         }
 
     }
@@ -43,20 +44,21 @@ public class ReadWriteLockExample {
 
     static class WriteWorker implements  Runnable {
 
-        ReadWriteLock lock;
-
-        public WriteWorker(ReadWriteLock lock) {
-
-            this.lock=lock;
+        SharedClass sc;
+        public WriteWorker(SharedClass sc) {
+            this.sc= sc;
         }
 
         @Override
         public void run() {
-            System.out.println("Write");
-            IntStream.range(0,20).forEach(a->{
-                check=a;
-            });
+            IntStream.range(0,15).forEach(a ->{
+                try {
+                    sc.writeMethod();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
+            } );
         }
 
     }
