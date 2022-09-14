@@ -15,14 +15,16 @@ public class CyclicBarrierMain {
 
     public void await() throws InterruptedException {
         synchronized (o){
-            if(count.decrementAndGet()>0) {
-                o.wait();
-            }else if (count.get()==0){
-                o.notifyAll();
-            }else {
-                System.out.println("Barrier size was " +cnt+ "!! Out of scope of Cyclic Barrier to handle this thread !!! Keep Waiting now !!!");
-                o.wait();
+
+            while(count.get()>0) {
+                count.set(count.get()-1);
+                if (count.get()==0){
+                    o.notifyAll();
+                }else {
+                    o.wait();
+                }
             }
+
         }
     }
 

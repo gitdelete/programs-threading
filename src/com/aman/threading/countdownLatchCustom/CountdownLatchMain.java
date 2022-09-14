@@ -22,7 +22,7 @@ public class CountdownLatchMain {
 
     public void await() throws InterruptedException {
         synchronized (o){
-        if (count.get() > 0) {
+        while (count.get() > 0) {
             o.wait();
         }
     }
